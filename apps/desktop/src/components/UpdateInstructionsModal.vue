@@ -105,6 +105,22 @@ function handleOpenRelease() {
             </div>
           </template>
 
+          <!-- ── MANUAL (macOS app bundle) ── DMG replacement instructions -->
+          <template v-else-if="installType === 'manual'">
+            <div class="update-method">
+              <h3 class="method-title">Install the latest macOS build</h3>
+              <p class="method-description">
+                Download the DMG for your Mac from the
+                <a
+                  v-if="releaseUrl"
+                  href="#"
+                  @click.prevent="handleOpenRelease"
+                >GitHub Releases page</a><template v-else>GitHub Releases page</template>,
+                quit TracePilot, then replace TracePilot in your Applications folder.
+              </p>
+            </div>
+          </template>
+
           <!-- ── PORTABLE (standalone exe) ── re-download instructions -->
           <template v-else>
             <div class="update-method">
@@ -130,6 +146,10 @@ function handleOpenRelease() {
               <strong>Note:</strong> If <code>git pull</code> fails due to conflicts,
               use <code>git stash</code> or <code>git reset --hard origin/main</code>
               (discards local changes) to resolve.
+            </template>
+            <template v-else-if="installType === 'manual'">
+              <strong>Note:</strong> macOS builds use an ad-hoc signature and are not notarized.
+              If Gatekeeper blocks the app, use System Settings → Privacy & Security → Open Anyway.
             </template>
             <template v-else>
               <strong>Note:</strong> TracePilot is not code-signed (not worth the cost at this stage),

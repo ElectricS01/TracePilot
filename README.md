@@ -16,7 +16,7 @@ It reads the session data Copilot CLI writes under `~/.copilot/session-state/` b
 
 > **Project status:** TracePilot is early-stage software. It is useful today, but the UI and internal data model still change quickly.
 >
-> **Platform status:** TracePilot is currently tested on Windows. The stack is cross-platform, but macOS and Linux are not yet official targets.
+> **Platform status:** TracePilot supports Windows and macOS 12+. Linux remains a best-effort target.
 
 <p align="center">
   <a href="#what-you-can-do">What you can do</a> |
@@ -132,13 +132,13 @@ Useful outputs:
 
 ### Prerequisites
 
-- Windows with the WebView2 runtime.
+- Windows with the WebView2 runtime, or macOS 12+.
 - GitHub Copilot CLI with session history.
 - For source builds: Rust, Node.js 22, pnpm 10, and the Tauri 2 prerequisites.
   The exact known-good versions are recorded in `.node-version` and the root
   `packageManager` field.
 
-### Option A: install a Windows build (recommended)
+### Option A: install a release build (recommended)
 
 Download the latest build from [GitHub Releases](https://github.com/MattShelton04/TracePilot/releases/latest).
 
@@ -149,13 +149,15 @@ The current release assets include:
 | `TracePilot_<version>_x64-setup.exe` | Recommended installer for most Windows users. |
 | `TracePilot_<version>_x64_en-US.msi` | MSI installer for environments that prefer MSI packages. |
 | `tracepilot-desktop.exe` | Standalone executable if you do not want to run an installer. |
+| `TracePilot_<version>_aarch64.dmg` | macOS installer for Apple Silicon Macs. |
+| `TracePilot_<version>_x64.dmg` | macOS installer for Intel Macs. |
 | `latest.json` and `*.sig` files | Updater metadata and signatures used by the release pipeline. |
 
-The app is not code-signed yet. Windows SmartScreen may warn on first launch; choose **More info** -> **Run anyway** if you trust the build, or build from source instead.
+Windows builds are not code-signed yet, and macOS builds use an ad-hoc signature rather than Apple notarization. Windows SmartScreen may warn on first launch; choose **More info** -> **Run anyway**. On macOS, open TracePilot once, then use **System Settings** -> **Privacy & Security** -> **Open Anyway** if Gatekeeper blocks it. Build from source instead if you do not trust an unsigned release.
 
 ### Option B: run from source
 
-```powershell
+```sh
 git clone https://github.com/MattShelton04/TracePilot.git
 cd TracePilot
 pnpm start

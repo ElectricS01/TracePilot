@@ -60,12 +60,18 @@ jobs:
   rust:
     name: rust (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
+    continue-on-error: ${{ matrix.experimental }}
     timeout-minutes: 20
     strategy:
       fail-fast: false
       matrix:
-        # macOS remains disabled while timing-sensitive tests are flaky there.
-        os: [ubuntu-latest, windows-latest]
+        include:
+          - os: ubuntu-latest
+            experimental: false
+          - os: windows-latest
+            experimental: false
+          - os: macos-latest
+            experimental: true
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 

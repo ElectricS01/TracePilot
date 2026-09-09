@@ -28,7 +28,7 @@ export const commands = {
 	getSessionCount: () => typedError<number, BindingsErrorIpc>(__TAURI_INVOKE("get_session_count")),
 	// Check if a session is currently running by looking for `inuse.*.lock` files.
 	isSessionRunning: (sessionId: string) => typedError<boolean, BindingsErrorIpc>(__TAURI_INVOKE("is_session_running", { sessionId })),
-	// Returns the installation type: "source", "installed", or "portable".
+	// Returns the installation type: "source", "installed", "manual", or "portable".
 	getInstallType: () => __TAURI_INVOKE<string>("get_install_type"),
 	checkForUpdates: () => typedError<UpdateCheckResult, BindingsErrorIpc>(__TAURI_INVOKE("check_for_updates")),
 	getGitInfo: () => __TAURI_INVOKE<GitInfo>("get_git_info"),
@@ -157,4 +157,3 @@ async function typedError<T, E>(result: Promise<T>): Promise<{ status: "ok"; dat
         return { status: "error", error: e as any };
     }
 }
-

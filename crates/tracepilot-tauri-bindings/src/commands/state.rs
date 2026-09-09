@@ -52,7 +52,7 @@ pub async fn get_session_count(state: tauri::State<'_, SharedConfig>) -> CmdResu
     })
 }
 
-/// Returns the installation type: "source", "installed", or "portable".
+/// Returns the installation type: "source", "installed", "manual", or "portable".
 #[tauri::command]
 #[specta::specta]
 pub fn get_install_type() -> String {

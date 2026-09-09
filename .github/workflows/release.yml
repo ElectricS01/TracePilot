@@ -91,8 +91,8 @@ jobs:
           draft: true
           prerelease: ${{ contains(steps.version.outputs.version, '-') }}
 
-  build-installers:
-    name: Build and upload installers
+  build-windows:
+    name: Build and upload Windows installers
     needs: create-release
     runs-on: windows-latest
     timeout-minutes: 30
@@ -128,9 +128,46 @@ jobs:
           fail_on_unmatched_files: true
           draft: true
 
+  build-macos:
+    name: Build and upload macOS (${{ matrix.arch }})
+    needs: create-release
+    runs-on: macos-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: Apple Silicon
+            target: aarch64-apple-darwin
+          - arch: Intel
+            target: x86_64-apple-darwin
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ needs.create-release.outputs.tag }}
+
+      - uses: ./.github/actions/setup-node-pnpm
+
+      - uses: ./.github/actions/setup-rust
+        with:
+          cache: "false"
+
+      - name: Install Rust target
+        shell: bash
+        run: rustup target add "${{ matrix.target }}"
+
+      - name: Build Tauri app
+        uses: tauri-apps/tauri-action@1deb371b0cd8bd54025b384f1cd735e725c4060f # v1.0.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          projectPath: apps/desktop
+          releaseId: ${{ needs.create-release.outputs.release_id }}
+          args: --target ${{ matrix.target }} --bundles dmg
+
   publish-release:
     name: Publish completed release
-    needs: [create-release, build-installers]
+    needs: [create-release, build-windows, build-macos]
     if: github.event_name == 'push' || inputs.draft == false
     runs-on: ubuntu-latest
     timeout-minutes: 5

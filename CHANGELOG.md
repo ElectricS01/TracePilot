@@ -7,6 +7,9 @@ and this project loosely adheres to [Semantic Versioning](https://semver.org/spe
 
 ## [Unreleased]
 
+### Added
+- **macOS release support** — Added ad-hoc-signed Apple Silicon and Intel DMG builds, macOS CI coverage, and cross-platform Tauri development commands.
+
 ## [0.8.1] - 2026-08-02
 
 ### Fixed

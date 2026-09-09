@@ -39,7 +39,7 @@ export async function checkForUpdates(): Promise<UpdateCheckResult> {
   return invoke<UpdateCheckResult>("check_for_updates");
 }
 
-/** Returns the install type: "source" | "installed" | "portable". */
+/** Returns the install type: "source" | "installed" | "manual" | "portable". */
 export async function getInstallType(): Promise<string> {
   return invoke<string>("get_install_type");
 }

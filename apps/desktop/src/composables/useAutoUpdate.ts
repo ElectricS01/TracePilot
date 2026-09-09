@@ -10,7 +10,7 @@ export type AutoUpdateStatus =
   | "installing"
   | "done"
   | "error";
-export type InstallType = "source" | "installed" | "portable" | "unknown";
+export type InstallType = "source" | "installed" | "manual" | "portable" | "unknown";
 
 const status = ref<AutoUpdateStatus>("idle");
 const progress = ref(0);
@@ -47,7 +47,9 @@ async function installUpdate(): Promise<void> {
     errorMessage.value =
       type === "source"
         ? "Auto-update is not available in dev mode. Use git pull instead."
-        : "Auto-update is not available for standalone exe. Download the latest version from GitHub Releases.";
+        : type === "manual"
+          ? "Auto-update is not available for macOS builds. Download the latest DMG from GitHub Releases."
+          : "Auto-update is not available for standalone exe. Download the latest version from GitHub Releases.";
     status.value = "error";
     return;
   }

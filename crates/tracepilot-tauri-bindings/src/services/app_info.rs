@@ -11,7 +11,7 @@ use tracing::warn;
 use crate::types::GitInfo;
 
 /// Returns the installation type as a stable string (`"source"`,
-/// `"installed"`, or `"portable"`) for the current process.
+/// `"installed"`, `"manual"`, or `"portable"`) for the current process.
 pub(crate) fn get_install_type_string() -> String {
     let appimage_env = std::env::var_os("APPIMAGE");
     let exe = std::env::current_exe().ok();
@@ -75,6 +75,7 @@ where
 enum InstallType {
     Source,
     Installed,
+    Manual,
     Portable,
 }
 
@@ -83,6 +84,7 @@ impl InstallType {
         match self {
             InstallType::Source => "source",
             InstallType::Installed => "installed",
+            InstallType::Manual => "manual",
             InstallType::Portable => "portable",
         }
     }
@@ -125,7 +127,9 @@ fn detect_install_type_for(
         }
         PlatformKind::Mac => {
             if is_macos_app_bundle(exe) {
-                InstallType::Installed
+                // macOS release bundles are ad-hoc signed and do not include
+                // signed updater artifacts, so updates must be installed from DMG.
+                InstallType::Manual
             } else {
                 InstallType::Portable
             }
@@ -266,10 +270,10 @@ mod tests {
     }
 
     #[test]
-    fn macos_app_bundle_counts_as_installed() {
+    fn macos_app_bundle_requires_manual_updates() {
         let exe = PathBuf::from("/Applications/TracePilot.app/Contents/MacOS/TracePilot");
         let install_type = detect_install_type_for(&exe, None, PlatformKind::Mac);
-        assert_eq!(install_type, InstallType::Installed);
+        assert_eq!(install_type, InstallType::Manual);
     }
 
     #[test]
@@ -348,11 +352,11 @@ mod tests {
     }
 
     #[test]
-    fn macos_nested_app_bundle_is_installed() {
+    fn macos_nested_app_bundle_requires_manual_updates() {
         let exe = PathBuf::from(
             "/Users/me/MyApps/Wrapper.app/Contents/Helpers/TracePilot.app/Contents/MacOS/tp",
         );
         let install_type = detect_install_type_for(&exe, None, PlatformKind::Mac);
-        assert_eq!(install_type, InstallType::Installed);
+        assert_eq!(install_type, InstallType::Manual);
     }
 }
